@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+  <html>
+    <head>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+      <script>
+        var root = 'http://api.viki.io/v4/videos.json?app=100250a&per_page=10&page=';
+        var trueCount = 0;
+        var falseCount = 0;
+
+        function ajaxCall(){
+          var pageNumber = 0;
+          pageloop(pageNumber);
+
+        }
+        
+        function pageloop(pageNumber){
+            $.ajax({
+              url: root + pageNumber,
+              method: 'GET'
+            }).then(function(data) {
+              console.log(data);
+              console.log(pageNumber);
+              // console.log(data.response[0]);
+
+              //check every data response
+              var i;
+              for(i = 0; i < data.response.length;  i++){
+                var responseItem = data.response[i];
+                // console.log(responseItem);
+                if(responseItem.flags.hd == true){
+                  trueCount++;
+                  // console.log("true");
+                } else {
+                  falseCount++;
+                  // console.log("false");
+                }
+              }
+              if(data.more == true){
+                // moreTrue = true;
+                // console.log("more true");
+                pageNumber++;
+                $("#trueTotal").text(trueCount);
+                $("#falseTotal").text(falseCount);
+                pageloop(pageNumber);
+              } else {
+                $("#trueTotal").text(trueCount);
+                $("#falseTotal").text(falseCount);
+              }
+            });
+        }
+
+      </script>
+    </head>
+
+    <body>
+      <p><button onclick="ajaxCall()">Search for hd flags.</button></p>
+      True total: 
+      <p id = 'trueTotal'></p>
+      False total:
+      <p id = 'falseTotal'></p>
+    </body>
+
+  </html>
+
