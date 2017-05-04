@@ -7,54 +7,46 @@
         var root = 'http://api.viki.io/v4/videos.json?app=100250a&per_page=10&page=';
         var trueCount = 0;
         var falseCount = 0;
+        var pageNumber = 1;
 
-        function ajaxCall(){
-          var pageNumber = 0;
-          pageloop(pageNumber);
-
+        //starts counting on first page
+        function countStart(){
+          pageloop();
         }
-        
-        function pageloop(pageNumber){
+        //continuously gets new JSON objects
+        function pageloop(){
             $.ajax({
               url: root + pageNumber,
               method: 'GET'
             }).then(function(data) {
-              console.log(data);
-              console.log(pageNumber);
-              // console.log(data.response[0]);
-
-              //check every data response
+              // console.log(pageNumber);
+              //loops through all response items within each JSON object
               var i;
               for(i = 0; i < data.response.length;  i++){
+                //counts each true/flag flag.hd
                 var responseItem = data.response[i];
-                // console.log(responseItem);
                 if(responseItem.flags.hd == true){
                   trueCount++;
-                  // console.log("true");
                 } else {
                   falseCount++;
-                  // console.log("false");
                 }
               }
+              //calls next page for new JSON object
               if(data.more == true){
-                // moreTrue = true;
-                // console.log("more true");
                 pageNumber++;
+                //continuously updates count on webpage
                 $("#trueTotal").text(trueCount);
                 $("#falseTotal").text(falseCount);
-                pageloop(pageNumber);
-              } else {
-                $("#trueTotal").text(trueCount);
-                $("#falseTotal").text(falseCount);
+                pageloop();
               }
             });
         }
-
       </script>
+
     </head>
 
     <body>
-      <p><button onclick="ajaxCall()">Search for hd flags.</button></p>
+      <p><button onclick="countStart()">Count for true/false flags</button></p>
       True total: 
       <p id = 'trueTotal'></p>
       False total:
